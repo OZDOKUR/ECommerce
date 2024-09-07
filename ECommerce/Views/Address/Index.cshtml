@@ -1,0 +1,58 @@
+﻿@model ECommerce.Models.ViewModels.AddresPageViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+    <div id="wrapper">
+
+        <!-- page-title -->
+        <div class="tf-page-title">
+            <div class="container-full">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="heading text-center">Adreslerim</div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /page-title -->
+        <!-- blog-list -->
+    <div class="container">
+        <div class="row">
+            @foreach (var detail in Model.AddressDetail)
+            {
+                string phoneNumber = @detail.PhoneNumber;
+                string maskedPhoneNumber = phoneNumber.Substring(0, 3) + new string('*', 5) + phoneNumber.Substring(phoneNumber.Length - 2);
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">@detail.Title</h5>
+                            <p class="card-text">
+                                @detail.Country Mahallesi<br>
+                                @detail.AddressLine1<br>
+                                <span style="opacity:0.6">@detail.AddressLine2</span><br>
+                                @detail.State/@detail.Country<br>
+                                @maskedPhoneNumber
+                            </p>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            <form>
+                                    <div class="article-btn">
+                                        <a href="blog-detail.html" style="color:darkred" class="tf-btn btn-line fw-6">Sil</a>
+                                    </div>
+                            </form>
+                            <div class="article-btn">
+                               
+                                    <a href="blog-detail.html" class="tf-btn btn-line fw-6">Düzenle<i class="icon icon-arrow1-top-left"></i></a>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    </div>

@@ -1,0 +1,250 @@
+﻿@model ECommerce.Models.ViewModels.HomePageViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+<head>
+    <style>
+        .banner-map {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+            .banner-map iframe {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                border: 0;
+            }
+
+        .flat-location {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .content {
+            position: absolute;
+            bottom: 10%;
+            left: 5%;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<div class="text-center">
+    
+    <section class="tf-slideshow slider-collection hover-sw-nav">
+        <div class="swiper tf-sw-slideshow" data-preview="3" data-mobile="1" data-space="5" data-loop="false" data-auto-play="false" data-delay="2000" data-speed="1000">
+            <div class="swiper-wrapper">
+                
+                    <div class="swiper-slide" lazy="true">
+                        <div class="collection-item hover-img">
+                            <div class="collection-inner">
+                                <a href="~/Erkek" class="collection-image img-style">
+                                    <img src="~/img/man.jpg" alt="Erkek">
+                                </a>
+                                <div class="collection-content">
+                                <a href="~/Erkek" class="tf-btn hover-icon collection-title radius-3"><span>Erkek</span><i class="icon icon-arrow1-top-left"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+               
+                <div class="swiper-slide" lazy="true">
+                    <div class="collection-item hover-img">
+                        <div class="collection-inner">
+                            <a href="~/Kadın" class="collection-image img-style">
+                                <img src="~/img/woman.jpg" alt="Kadın">
+                            </a>
+                            <div class="collection-content">
+                                <a href="~/Kadın" class="tf-btn hover-icon collection-title radius-3"><span>Kadın</span><i class="icon icon-arrow1-top-left"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="swiper-slide" lazy="true">
+                    <div class="collection-item hover-img">
+                        <div class="collection-inner">
+                            <a href="~/Çocuk" class="collection-image img-style">
+                                <img src="~/img/child.jpg" alt="Çocuk">
+                            </a>
+                            <div class="collection-content">
+                                <a href="~/Çocuk" class="tf-btn hover-icon collection-title radius-3"><span>Çocuk</span><i class="icon icon-arrow1-top-left"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="tf-marquee bg_yellow-2">
+        <div class="wrap-marquee">
+            @for (int i =0; i <= 5; i++)
+            {
+                <div class="marquee-item">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="" width="15" height="20" viewBox="0 0 15 20"><path d="M14.5833 8H8.61742L9.94318 0L0 12H5.96591L4.64015 20L14.5833 8"></path></svg>
+                    </div>
+                    <p class="text">Açılışa Özel Sepette %40 İndirim</p>
+                </div>
+            }
+        </div>
+
+    </div>
+    <!-- /Marquee -->
+    <!-- Collection -->
+   
+    <!-- /Collection -->
+    <!-- Sale Product -->
+    <section class="flat-spacing-17">
+        <div class="container">
+            <div class="flat-animate-tab">
+                <ul class="widget-tab-3 d-flex justify-content-center wow fadeInUp" data-wow-delay="0s" role="tablist">
+                    <li class="nav-tab-item" role="presentation">
+                        <a href="#bestSeller" class="active" data-bs-toggle="tab">Yeni Ürünler</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active show" id="bestSeller" role="tabpanel">
+                        <div class="grid-layout loadmore-item" data-grid="grid-4">
+                            @foreach (var detail in Model.ProductDetails)
+                            {
+                                var defaultVariant = detail.Variants.FirstOrDefault();
+                                var defaultImage = detail.Images.FirstOrDefault(i => i.VariantId == defaultVariant?.Id)?.ImageUrl;
+
+                                var groupedVariants = detail.Variants
+                                .GroupBy(v => v.Color)
+                                .Select(g => g.First())
+                                .ToList();
+
+                                <div class="card-product fl-item">
+                                    <div class="card-product-wrapper">
+                                        <a asp-controller="Product" asp-action="Index" asp-route-name="@detail.Product.ProductName" asp-route-color="@defaultVariant.Color" asp-route-SKU="@defaultVariant.SKU">
+                                            <img id="product-image-@detail.Product.Id" class="lazyload img-product" src="@defaultImage" alt="image-product">
+                                            <img id="hover-image-@detail.Product.Id" class="lazyload img-hover" src="@defaultImage" alt="image-hover">
+                                        </a>
+                                        <div class="list-product-btn">
+                                            <a href="#quick_add" data-bs-toggle="modal" class="box-icon bg_white quick-add tf-btn-loading">
+                                                <span class="icon icon-bag"></span>
+                                                <span class="tooltip">Quick Add</span>
+                                            </a>
+                                            <a href="javascript:void(0);" class="box-icon bg_white wishlist btn-icon-action">
+                                                <span class="icon icon-heart"></span>
+                                                <span class="tooltip">Add to Wishlist</span>
+                                                <span class="icon icon-delete"></span>
+                                            </a>
+                                            <a href="#quick_view" data-bs-toggle="modal" class="box-icon bg_white quickview tf-btn-loading">
+                                                <span class="icon icon-view"></span>
+                                                <span class="tooltip">Quick View</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="card-product-info">
+                                        <a href="product-detail.html" class="title link">@detail.Product.ProductName</a>
+                                        <span class="price">@detail.Product.Price.ToString("C")</span>
+                                        <ul class="list-color-product">
+                                            @foreach (var variant in groupedVariants)
+                                            {
+                                                var variantImage = detail.Images.FirstOrDefault(i => i.VariantId == variant.Id)?.ImageUrl;
+                                                <li class="list-color-item color-swatch @(variant.Id == defaultVariant?.Id ? "active" : "")"
+                                                    onmouseover="document.getElementById('product-image-@detail.Product.Id').src='@variantImage'; document.getElementById('hover-image-@detail.Product.Id').src='@variantImage';"
+                                                    onclick="window.location.href='@Url.Action("Index", "Product", new { name = detail.Product.ProductName, color = variant.Color , SKU= variant.SKU})';"
+                                                    data-variant-id="@variant.Id">
+                                                    <span class="tooltip">@variant.Color</span>
+                                                    <span class="swatch-value" style="background-color:@variant.Color;"></span>
+                                                    <img class="lazyload" src="@variantImage" alt="image-product">
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="tf-pagination-wrap view-more-button text-center">
+                            <button class="tf-btn-loading tf-loading-default style-2 btn-loadmore"><span class="text">Daha Fazlası</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function updateActiveSwatch(element) {
+            // Aynı listede aktif olan diğer tüm swatch'ların "active" sınıfını kaldır
+            var siblings = element.parentNode.querySelectorAll('.color-swatch');
+            siblings.forEach(function (sibling) {
+                sibling.classList.remove('active');
+            });
+
+            // Seçilen swatch'a "active" sınıfını ekle
+            element.classList.add('active');
+        }
+    </script>
+    <!-- /Sale Product -->
+    <!-- brand -->
+    <section class="flat-spacing-1">
+        <div class="container">
+            <div class="swiper tf-sw-brand" data-loop="false" data-play="false" data-preview="6" data-tablet="3" data-mobile="2" data-space-lg="0" data-space-md="0">
+                <div class="swiper-wrapper">
+                    @foreach(var item in Model.Brands)
+                    {
+                        <div class="swiper-slide">
+                            <div class="brand-item">
+                                <img class="lazyload" src="@item.Picture" alt="@item.Name">
+                            </div>
+                        </div>
+                    }
+                    
+
+                </div>
+            </div>
+            <div class="sw-dots style-2 sw-pagination-brand justify-content-center"></div>
+        </div>
+    </section>
+    <!-- /brand -->
+    <!-- Location -->
+    <section>
+        <div class="container">
+            <div class="flat-location">
+                <div class="banner-map">
+                    <!-- Google Maps iframe -->
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3122.417009159603!2d31.16348661538294!3d40.83826427931656!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14caca76a3b8a8af%3A0x8d5d5aabc7a4d09d!2sAzmimilli%2C%20Serhat%20Sk.%20No%3A1%2F1%2C%2081020%20D%C3%BCzce%20Merkez%2FD%C3%BCzce!5e0!3m2!1str!2str!4v1692131223412!5m2!1str!2str"
+                            allowfullscreen=""
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+                <div class="content wow fadeInUp" data-wow-delay="0s">
+                    <h3 class="heading">OPEN Yazılım ve Donanım Destek Hizmetleri</h3>
+                    <p class="subtext">
+                        Azmimilli, Serhat Sk. No:1/1, 81020 Düzce Merkez/Düzce, Türkiye
+                        <br>
+                        support@openyazilim.com
+                        <br>
+                        (0380) 123 45 67
+                    </p>
+                    <p class="subtext">
+                        Mon - Fri, 8:30am - 6:00pm
+                        <br>
+                        Saturday, 9:00am - 2:00pm
+                        <br>
+                        Sunday Closed
+                    </p>
+                    <a href="https://maps.app.goo.gl/RKWwwsLvWKtvTHNq8" target="_self" class="tf-btn btn-line collection-other-link fw-6">Get Directions<i class="icon icon-arrow1-top-left"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- /Location -->
+   
+</div>

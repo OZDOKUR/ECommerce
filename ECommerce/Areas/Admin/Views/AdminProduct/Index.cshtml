@@ -1,0 +1,254 @@
+﻿@model IEnumerable<ECommerce.Areas.Admin.Models.ViewModels.AdminProductDetailVM>
+@{
+    ViewData["Title"] = "Ürünler";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row layout-spacing">
+    <div class="col-lg-12">
+        <div class="statbox widget box box-shadow">
+            <div class="widget-content widget-content-area">
+                <h2>Ürünler</h2>
+                <button class="btn btn-outline-primary mb-2 me-4" style="float:right;" data-bs-toggle="modal" data-bs-target="#AddModal">Yeni Ürün Ekle +</button>
+                <table id="style-3" class="table style-3 dt-table-hover">
+                    <thead>
+                        <tr>
+                            <th>Ürün İsmi</th>
+                            <th>Açıklama</th>
+                            <th>Fiyat</th>
+                            <th>Stok Miktarı</th>
+                            <th>Kategori</th>
+                            <th>Marka</th>
+                            <th>Resimler</th>
+                            <th>#Düzenle</th>
+                            <th>#Sil</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.ProductName</td>
+                                <td>@item.Description</td>
+                                <td>@item.Price.ToString("C")</td>
+                                <td>@item.StockQuantity</td>
+                                <td>@item.CategoryName</td>
+                                <td>@item.BrandName</td>
+                                <td>
+                                    <button class="btn btn-outline-info btn-rounded mb-2 me-4"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#ImageModal"
+                                            data-product-id="@item.Id"
+                                            data-image-urls="@string.Join(",", item.ImageUrls)">
+                                        Görüntüle
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-outline-warning btn-rounded mb-2 me-4"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#EditModal"
+                                            data-product-id="@item.Id"
+                                            data-product-name="@item.ProductName"
+                                            data-description="@item.Description"
+                                            data-price="@item.Price"
+                                            data-stock-quantity="@item.StockQuantity"
+                                            data-category-name="@item.CategoryName"
+                                            data-brand-name="@item.BrandName">
+                                        Düzenle
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-outline-danger btn-rounded mb-2 me-4"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#DeleteModal"
+                                            data-product-id="@item.Id"
+                                            data-product-name="@item.ProductName">
+                                        Sil
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Modal -->
+<div class="modal fade" id="ImageModal" tabindex="-1" role="dialog" aria-labelledby="ImageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ImageModalLabel">Ürün Resimleri</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="image-gallery" class="row">
+                    <!-- Images will be inserted here by JavaScript -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="AddModal" tabindex="-1" role="dialog" aria-labelledby="AddModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" id="AddProductContent">
+            <!-- İçerik burada yüklenecek -->
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="EditModal" tabindex="-1" role="dialog" aria-labelledby="EditModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="/AdminProduct/Edit" enctype="multipart/form-data">
+                <input type="hidden" id="EditProductId" name="Id">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="EditModalLabel">Ürün Düzenle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="EditProductName" class="form-label">Ürün İsmi</label>
+                        <input type="text" class="form-control" id="EditProductName" name="ProductName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="EditDescription" class="form-label">Açıklama</label>
+                        <textarea class="form-control" id="EditDescription" name="Description" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="EditPrice" class="form-label">Fiyat</label>
+                        <input type="number" class="form-control" id="EditPrice" name="Price" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="EditStockQuantity" class="form-label">Stok Miktarı</label>
+                        <input type="number" class="form-control" id="EditStockQuantity" name="StockQuantity" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="EditCategory" class="form-label">Kategori</label>
+                        <select class="form-select" id="EditCategory" name="CategoryId" required>
+                            <!-- Categories will be inserted here by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="EditBrand" class="form-label">Marka</label>
+                        <select class="form-select" id="EditBrand" name="BrandId" required>
+                            <!-- Brands will be inserted here by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="EditProductImage" class="form-label">Ürün Resmi</label>
+                        <input type="file" class="form-control" id="EditProductImage" name="ProductImage" accept="image/*">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                    <button type="submit" class="btn btn-primary">Güncelle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Delete Modal -->
+<div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="/AdminProduct/Delete">
+                <input type="hidden" id="DeleteProductId" name="Id">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="DeleteModalLabel">Ürün Sil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="deleteProductName">Bu ürünü silmek istediğinize emin misiniz?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
+                    <button type="submit" class="btn btn-danger">Sil</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var addModal = document.getElementById('AddModal');
+    addModal.addEventListener('show.bs.modal', function () {
+        fetch('/AdminProduct/Add')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('AddProductContent').innerHTML = data;
+            });
+    });
+
+    var imageModal = document.getElementById('ImageModal');
+    imageModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var imageUrls = button.getAttribute('data-image-urls').split(',');
+
+        var imageGallery = document.getElementById('image-gallery');
+        imageGallery.innerHTML = ''; // Clear previous images
+
+        imageUrls.forEach(function (url) {
+            var img = document.createElement('img');
+            img.src = url;
+            img.classList.add('img-thumbnail');
+            img.style.width = '100px'; // Adjust width as needed
+            img.style.marginRight = '10px';
+            imageGallery.appendChild(img);
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var editModal = document.getElementById('EditModal');
+        var deleteModal = document.getElementById('DeleteModal');
+
+        editModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var productId = button.getAttribute('data-product-id');
+            var productName = button.getAttribute('data-product-name');
+            var description = button.getAttribute('data-description');
+            var price = button.getAttribute('data-price');
+            var stockQuantity = button.getAttribute('data-stock-quantity');
+            var categoryName = button.getAttribute('data-category-name');
+            var brandName = button.getAttribute('data-brand-name');
+
+            var editProductIdInput = editModal.querySelector('#EditProductId');
+            var editProductNameInput = editModal.querySelector('#EditProductName');
+            var editDescriptionInput = editModal.querySelector('#EditDescription');
+            var editPriceInput = editModal.querySelector('#EditPrice');
+            var editStockQuantityInput = editModal.querySelector('#EditStockQuantity');
+            var editCategorySelect = editModal.querySelector('#EditCategory');
+            var editBrandSelect = editModal.querySelector('#EditBrand');
+
+            editProductIdInput.value = productId;
+            editProductNameInput.value = productName;
+            editDescriptionInput.value = description;
+            editPriceInput.value = price;
+            editStockQuantityInput.value = stockQuantity;
+
+            // Populate categories and brands in the select elements
+            // Fetch categories and brands and set selected value
+        });
+
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var productId = button.getAttribute('data-product-id');
+            var productName = button.getAttribute('data-product-name');
+
+            var deleteProductIdInput = deleteModal.querySelector('#DeleteProductId');
+            var deleteProductName = deleteModal.querySelector('#deleteProductName');
+
+            deleteProductIdInput.value = productId;
+            deleteProductName.textContent = `${productName} ürününü silmek istediğinize emin misiniz?`;
+        });
+    });
+</script>

@@ -1,0 +1,225 @@
+﻿@model IEnumerable<Entities.Concrete.Category>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row layout-spacing">
+    <div class="col-lg-12">
+        <div class="statbox widget box box-shadow">
+            <div class="widget-content widget-content-area">
+                <h2>Kategoriler</h2>
+                <button class="btn btn-outline-primary mb-2 me-4" style="float:right;" data-bs-toggle="modal" data-bs-target="#AddModal">Yeni Kategori Ekle +</button>
+                <table id="style-3" class="table style-3 dt-table-hover">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Resim</th>
+                            <th>Kategori İsmi</th>
+                            <th>Açıklama</th>
+                            <th>Durum</th>
+                            <th>Üst Kategori</th>
+                            <th>#Düzenle</th>
+                            <th>#Sil</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    <div class="avatar avatar-lg">
+                                        <span><img src="@item.CategoryPicture" class="rounded" alt="@item.CategoryName"></span>
+                                    </div>
+                                </td>
+                                <td>@item.CategoryName</td>
+                                <td>@item.Description</td>
+                                @if (item.ParentCategoryId == 0)
+                                {
+                                    <td><span class="shadow-none badge badge-secondary">Ana Kategori</span></td>
+                                    <td><span class="shadow-none badge badge-warning">Üst Kategorisi Yok</span></td>
+                                }
+                                else
+                                {
+                                    <td><span class="shadow-none badge badge-success">Alt Kategori</span></td>
+                                    <td><span class="shadow-none badge badge-secondary">@item.ParentCategory.CategoryName</span></td>
+                                }
+                                <td>
+                                    <button class="btn btn-outline-info btn-rounded mb-2 me-4"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#EditModal"
+                                            data-category-id="@item.Id"
+                                            data-category-name="@item.CategoryName"
+                                            data-category-description="@item.Description"
+                                            data-category-parent-id="@item.ParentCategoryId"
+                                            data-category-picture="@item.CategoryPicture">
+                                        Düzenle
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-outline-danger btn-rounded mb-2 me-4"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#SilModal"
+                                            data-category-id="@item.Id"
+                                            data-category-name="@item.CategoryName">
+                                        Sil
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="AddModal" tabindex="-1" role="dialog" aria-labelledby="AddModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="/AdminCategories/Add" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="AddModalLabel">Yeni Kategori Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <svg> ... </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="CategoryName" class="form-label">Kategori İsmi</label>
+                        <input type="text" class="form-control" id="CategoryName" name="CategoryName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Description" class="form-label">Açıklama</label>
+                        <textarea class="form-control" id="Description" name="Description" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ParentCategoryId" class="form-label">Üst Kategori</label>
+                        <select class="form-select" id="ParentCategoryId" name="ParentCategoryId">
+                            <option value="0">Üst Kategori Yok</option>
+                            @foreach (var category in Model)
+                            {
+                                <option value="@category.Id">@category.CategoryName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="CategoryPicture" class="form-label">Kategori Resmi</label>
+                        <input type="file" class="form-control" id="CategoryPicture" name="CategoryPicture" accept="image/*" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal">Vazgeç</button>
+                    <button type="submit" class="btn btn-primary">Ekle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit Modal -->
+<div class="modal fade" id="EditModal" tabindex="-1" role="dialog" aria-labelledby="EditModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="/AdminCategories/Edit" enctype="multipart/form-data">
+                <input type="hidden" id="EditCategoryId" name="CategoryId">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="EditModalLabel">Kategori Düzenle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <svg> ... </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="EditCategoryName" class="form-label">Kategori İsmi</label>
+                        <input type="text" class="form-control" id="EditCategoryName" name="CategoryName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="EditDescription" class="form-label">Açıklama</label>
+                        <textarea class="form-control" id="EditDescription" name="Description" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="EditParentCategoryId" class="form-label">Üst Kategori</label>
+                        <select class="form-select" id="EditParentCategoryId" name="ParentCategoryId">
+                            <option value="0">Üst Kategori Yok</option>
+                            @foreach (var category in Model)
+                            {
+                                <option value="@category.Id">@category.CategoryName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="EditCategoryPicture" class="form-label">Kategori Resmi</label>
+                        <input type="file" class="form-control" id="EditCategoryPicture" name="CategoryPicture" accept="image/*">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal">Vazgeç</button>
+                    <button type="submit" class="btn btn-primary">Güncelle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Sil Modal -->
+<div class="modal fade" id="SilModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="/AdminCategories/SoftDelete">
+                <input type="hidden" id="categoryIdInput" name="id">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Kategori Sil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <svg> ... </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalCategoryName">Bu kategoriyi silmek istediğinize emin misiniz?</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-light-dark" data-bs-dismiss="modal"><i class="flaticon-cancel-12"></i> Vazgeç</button>
+                    <button type="submit" class="btn btn-primary">Sil</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    var editModal = document.getElementById('EditModal');
+    editModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var categoryId = button.getAttribute('data-category-id');
+        var categoryName = button.getAttribute('data-category-name');
+        var categoryDescription = button.getAttribute('data-category-description');
+        var categoryParentId = button.getAttribute('data-category-parent-id');
+        var categoryPicture = button.getAttribute('data-category-picture');
+
+        var editCategoryIdInput = editModal.querySelector('#EditCategoryId');
+        var editCategoryNameInput = editModal.querySelector('#EditCategoryName');
+        var editCategoryDescriptionInput = editModal.querySelector('#EditDescription');
+        var editParentCategoryIdInput = editModal.querySelector('#EditParentCategoryId');
+        var editCategoryPictureInput = editModal.querySelector('#EditCategoryPicture');
+
+        editCategoryIdInput.value = categoryId;
+        editCategoryNameInput.value = categoryName;
+        editCategoryDescriptionInput.value = categoryDescription;
+        editParentCategoryIdInput.value = categoryParentId;
+        editCategoryPictureInput.value = categoryPicture;
+    });
+
+    var deleteModal = document.getElementById('SilModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var categoryId = button.getAttribute('data-category-id');
+        var categoryName = button.getAttribute('data-category-name');
+        var modalCategoryName = deleteModal.querySelector('.modal-body #modalCategoryName');
+        var categoryIdInput = deleteModal.querySelector('.modal-footer #categoryIdInput');
+
+        modalCategoryName.textContent = categoryName + ' kategorisini silmek istediğinize emin misiniz?';
+        categoryIdInput.value = categoryId;
+    });
+</script>

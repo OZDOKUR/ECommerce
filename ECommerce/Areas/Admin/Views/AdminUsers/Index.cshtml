@@ -1,0 +1,203 @@
+﻿@model List<ECommerce.Areas.Admin.Models.ViewModels.AdminUserVM>
+@{
+    ViewData["Title"] = "Kullanıcılar";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row layout-spacing">
+    <div class="col-lg-12">
+        <div class="statbox widget box box-shadow">
+            <div class="widget-content widget-content-area">
+                <h2>Kullanıcılar</h2>
+                <button class="btn btn-outline-primary mb-2 me-4" style="float:right;" data-bs-toggle="modal" data-bs-target="#AddUserModal">Yeni Kullanıcı Ekle +</button>
+                <table id="style-3" class="table style-3 dt-table-hover">
+                    <thead>
+                        <tr>
+                            <th>İsim</th>
+                            <th>Soyisim</th>
+                            <th>Email</th>
+                            <th>Telefon</th>
+                            <th>Rol</th>
+                            <th>#Düzenle</th>
+                            <th>#Sil</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Name</td>
+                                <td>@item.LastName</td>
+                                <td>@item.Mail</td>
+                                <td>@item.PhoneNumber</td>
+                                <td>@item.Role</td>
+                                <td>
+                                    <button class="btn btn-outline-info btn-rounded mb-2 me-4"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#EditUserModal"
+                                            data-user-id="@item.Id"
+                                            data-user-name="@item.Name"
+                                            data-user-lastname="@item.LastName"
+                                            data-user-email="@item.Mail"
+                                            data-user-phonenumber="@item.PhoneNumber"
+                                            data-user-role="@item.Role">
+                                        Düzenle
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-outline-danger btn-rounded mb-2 me-4"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#DeleteUserModal"
+                                            data-user-id="@item.Id"
+                                            data-user-name="@item.Name">
+                                        Sil
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Kullanıcı Ekle Modal -->
+<div class="modal fade" id="AddUserModal" tabindex="-1" role="dialog" aria-labelledby="AddUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="/AdminUsers/Add">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="AddUserModalLabel">Yeni Kullanıcı Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <svg> ... </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="AddUserName" class="form-label">İsim</label>
+                        <input type="text" class="form-control" id="AddUserName" name="Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="AddUserLastName" class="form-label">Soyisim</label>
+                        <input type="text" class="form-control" id="AddUserLastName" name="LastName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="AddUserEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="AddUserEmail" name="Mail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="AddUserPhoneNumber" class="form-label">Telefon</label>
+                        <input type="text" class="form-control" id="AddUserPhoneNumber" name="PhoneNumber" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="AddUserRole" class="form-label">Rol</label>
+                        <select class="form-select" id="AddUserRole" name="Role" required>
+                            @foreach (var role in ViewBag.RoleOptions as IEnumerable<SelectListItem>)
+                            {
+                                <option value="@role.Value">@role.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                    <button type="submit" class="btn btn-primary">Ekle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Kullanıcı Düzenle Modal -->
+<div class="modal fade" id="EditUserModal" tabindex="-1" role="dialog" aria-labelledby="EditUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="/AdminUsers/Edit">
+                <input type="hidden" id="EditUserId" name="Id" />
+                <div class="modal-header">
+                    <h5 class="modal-title" id="EditUserModalLabel">Kullanıcı Düzenle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <svg> ... </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="EditUserName" class="form-label">İsim</label>
+                        <input type="text" class="form-control" id="EditUserName" name="Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="EditUserLastName" class="form-label">Soyisim</label>
+                        <input type="text" class="form-control" id="EditUserLastName" name="LastName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="EditUserEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="EditUserEmail" name="Mail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="EditUserPhoneNumber" class="form-label">Telefon</label>
+                        <input type="text" class="form-control" id="EditUserPhoneNumber" name="PhoneNumber" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="EditUserRole" class="form-label">Rol</label>
+                        <select class="form-select" id="EditUserRole" name="Role" required>
+                            @foreach (var role in ViewBag.RoleOptions as IEnumerable<SelectListItem>)
+                            {
+                                <option value="@role.Value">@role.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Kullanıcı Sil Modal -->
+<div class="modal fade" id="DeleteUserModal" tabindex="-1" role="dialog" aria-labelledby="DeleteUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="/AdminUsers/SoftDelete">
+                <input type="hidden" id="DeleteUserId" name="id" />
+                <div class="modal-header">
+                    <h5 class="modal-title" id="DeleteUserModalLabel">Kullanıcı Sil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <svg> ... </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Bu kullanıcıyı silmek istediğinize emin misiniz?</p>
+                    <p><strong id="DeleteUserName"></strong></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                    <button type="submit" class="btn btn-danger">Sil</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Edit User Modal
+    $('#EditUserModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        $('#EditUserId').val(button.data('user-id'));
+        $('#EditUserName').val(button.data('user-name'));
+        $('#EditUserLastName').val(button.data('user-lastname'));
+        $('#EditUserEmail').val(button.data('user-email'));
+        $('#EditUserPhoneNumber').val(button.data('user-phonenumber'));
+        $('#EditUserRole').val(button.data('user-role'));
+    });
+
+    // Delete User Modal
+    $('#DeleteUserModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        $('#DeleteUserId').val(button.data('user-id'));
+        $('#DeleteUserName').text(button.data('user-name'));
+    });
+</script>

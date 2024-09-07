@@ -1,0 +1,77 @@
+﻿@model IEnumerable<ECommerce.Areas.Admin.Models.ViewModels.AdminOrderVM>
+@{
+    ViewData["Title"] = "Siparişler";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row layout-spacing">
+    <div class="col-lg-12">
+        <div class="statbox widget box box-shadow">
+            <div class="widget-content widget-content-area">
+                <h2>Siparişler</h2>
+                <table id="style-3" class="table style-3 dt-table-hover">
+                    <thead>
+                        <tr>
+                            <th>Sipariş No</th>
+                            <th>Sipariş Veren</th>
+                            <th>Şehir</th>
+                            <th>Toplam Tutar</th>
+                            <th>#Detaylar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>#@item.OrderId</td>
+                                <td>@item.Name.ToUpper() @item.LastName.ToUpper()</td>
+                                <td>@item.Country /@item.States </td>
+                                <td>@item.Total.ToString("C")</td>
+                                <td>
+                                    <button class="btn btn-outline-warning btn-rounded mb-2 me-4" data-order-id="@item.OrderId" data-bs-toggle="modal" data-bs-target="#DetailsModal">
+                                        Detaylar
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detaylar Modal -->
+<div class="modal fade" id="DetailsModal" tabindex="-1" role="dialog" aria-labelledby="DetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="DetailsModalLabel">Sipariş Detayları</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Sipariş detayları burada gösterilecek -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var detailsModal = document.getElementById('DetailsModal');
+        detailsModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var orderId = button.getAttribute('data-order-id');
+
+            fetch(`/Admin/AdminOrders/DetailsPartial?id=${orderId}`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('modalBody').innerHTML = data;
+                })
+                .catch(error => console.error('Error loading order details:', error));
+        });
+    });
+</script>

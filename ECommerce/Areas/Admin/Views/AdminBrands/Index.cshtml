@@ -1,0 +1,192 @@
+﻿@model IEnumerable<Entities.Concrete.Brand>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="row layout-spacing">
+    <div class="col-lg-12">
+        <div class="statbox widget box box-shadow">
+            <div class="widget-content widget-content-area">
+                <h2>Kategoriler</h2>
+                <button class="btn btn-outline-primary mb-2 me-4" style="float:right;" data-bs-toggle="modal" data-bs-target="#AddModal">Yeni Marka Ekle +</button>
+                <table id="style-3" class="table style-3 dt-table-hover">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Resim</th>
+                            <th>Marka İsmi</th>
+                            <th>Açıklama</th>
+                            <th>#Detaylar</th>
+                            <th>#Düzenle</th>
+                            <th>#Sil</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    <div class="avatar avatar-lg">
+                                        <span><img src="@item.Picture" class="rounded" alt="@item.Name"></span>
+                                    </div>
+                                </td>
+                                <td>@item.Name.ToUpper()</td>
+                                <td>@item.Description</td>
+                                <td>
+                                    <button class="btn btn-outline-warning btn-rounden mb-2 me-4">Deyatlar</button>
+                                </td>
+
+                                <td>
+                                    <button class="btn btn-outline-info btn-rounded mb-2 me-4"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#EditModal"
+                                            data-brand-id="@item.Id"
+                                            data-brand-name="@item.Name"
+                                            data-brand-description="@item.Description"
+                                            data-brand-picture="@item.Picture">
+                                        Düzenle
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-outline-danger btn-rounded mb-2 me-4"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#SilModal"
+                                            data-brand-id="@item.Id"
+                                            data-brand-name="@item.Name">
+                                        Sil
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ekle Modal -->
+<div class="modal fade" id="AddModal" tabindex="-1" role="dialog" aria-labelledby="AddModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="/AdminBrands/Add" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="AddModalLabel">Yeni Marka Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <svg> ... </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="BrandName" class="form-label">Kategori İsmi</label>
+                        <input type="text" class="form-control" id="BrandName" name="BrandName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="Description" class="form-label">Açıklama</label>
+                        <textarea class="form-control" id="Description" name="Description" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="BrandPicture" class="form-label">Kategori Resmi</label>
+                        <input type="file" class="form-control" id="BrandPicture" name="BrandPicture" accept="image/*" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal">Vazgeç</button>
+                    <button type="submit" class="btn btn-primary">Ekle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Düzenle Modal -->
+<div class="modal fade" id="EditModal" tabindex="-1" role="dialog" aria-labelledby="EditModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="/AdminBrands/Edit" enctype="multipart/form-data">
+                <input type="hidden" id="EditBrandId" name="BrandId">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="EditModalLabel">Kategori Düzenle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <svg> ... </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="EditBrandName" class="form-label">Kategori İsmi</label>
+                        <input type="text" class="form-control" id="EditBrandName" name="BrandName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="EditDescription" class="form-label">Açıklama</label>
+                        <textarea class="form-control" id="EditDescription" name="Description" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="EditBrandPicture" class="form-label">Kategori Resmi</label>
+                        <input type="file" class="form-control" id="EditBrandPicture" name="BrandPicture" accept="image/*">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-dark" data-bs-dismiss="modal">Vazgeç</button>
+                    <button type="submit" class="btn btn-primary">Güncelle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Sil Modal -->
+<div class="modal fade" id="SilModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="/AdminBrands/SoftDelete">
+                <input type="hidden" id="brandIdInput" name="id">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Marka Sil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <svg> ... </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalBrandName">Bu Markayı silmek istediğinize emin misiniz?</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-light-dark" data-bs-dismiss="modal"><i class="flaticon-cancel-12"></i> Vazgeç</button>
+                    <button type="submit" class="btn btn-primary">Sil</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    var editModal = document.getElementById('EditModal');
+    editModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var brandId = button.getAttribute('data-brand-id');
+        var brandName = button.getAttribute('data-brand-name');
+        var brandDescription = button.getAttribute('data-brand-description');
+        var brandPicture = button.getAttribute('data-brand-picture');
+
+        var editBrandIdInput = editModal.querySelector('#EditBrandId');
+        var editBrandNameInput = editModal.querySelector('#EditBrandName');
+        var editBrandDescriptionInput = editModal.querySelector('#EditDescription');
+
+        editBrandIdInput.value = brandId;
+        editBrandNameInput.value = brandName;
+        editBrandDescriptionInput.value = brandDescription;
+
+    });
+
+    var deleteModal = document.getElementById('SilModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var brandId = button.getAttribute('data-brand-id');
+        var brandName = button.getAttribute('data-brand-name');
+        var modalBrandName = deleteModal.querySelector('.modal-body #modalBrandName');
+        var brandIdInput = deleteModal.querySelector('.modal-footer #brandIdInput');
+
+        modalBrandName.textContent = BrandName + ' kategorisini silmek istediğinize emin misiniz?';
+        brandIdInput.value = brandId;
+    });
+</script>

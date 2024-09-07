@@ -1,0 +1,27 @@
+﻿@model ECommerce.Areas.Admin.Models.ViewModels.AdminOrderVM
+
+<div>
+    <h4>Sipariş No: @Model.OrderId</h4>
+    <p><strong>Adı:</strong> @Model.Name @Model.LastName</p>
+    <p><strong>Toplam Tutar:</strong> @Model.Total.ToString("C")</p>
+    <p><strong>Şehir:</strong> @Model.Country</p>
+    <p><strong>İlçe:</strong> @Model.States</p>
+    <p><strong>Adres 1:</strong> @Model.Address1</p>
+    <p><strong>Adres 2:</strong> @Model.Address2</p>
+    <p><strong>Sipariş Tarihi:</strong> @Model.OrderDate.ToString("dd MMMM yyyy")</p>
+
+    <h5>Sipariş Kalemleri:</h5>
+    <ul>
+        @foreach (var item in Model.OrderItems)
+        {
+            <li>
+                <strong>Ürün Adı:</strong> @item.ProductName <br />
+                <strong>Renk:</strong> @item.Color <br />
+                <strong>Beden:</strong> @item.Size <br />
+                <strong>Adet:</strong> @item.Quantity <br />
+                <strong>Fiyat:</strong> @item.Price.ToString("C") X @item.Quantity = @((item.Price * item.Quantity).ToString("C"))
+
+            </li>
+        }
+    </ul>
+</div>

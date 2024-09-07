@@ -1,0 +1,152 @@
+﻿@model ECommerce.Models.ViewModels.PaymentViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="wrapper">
+
+    <!-- page-title -->
+    <div class="tf-page-title">
+        <div class="container-full">
+            <div class="heading text-center">Ödeme</div>
+        </div>
+    </div>
+    <!-- /page-title -->
+    <!-- page-cart -->
+    <form asp-action="CreateOrder" asp-controller="Order" method="post">
+
+        <input type="hidden" name="TotalAmount" value="@Model.CartViewModel.CartItems.Sum(item => item.Quantity * (Model.CartViewModel.ProductDetails.First(pd => pd.Product.Id == item.ProductId).Product.Price + Model.CartViewModel.ProductDetails.First(pd => pd.Product.Id == item.ProductId).Variants.First(v => v.Id == item.VariantId).AdditionalPrice))" />
+
+
+        <section class="flat-spacing-11">
+            <div class="container">
+                <div class="tf-page-cart-wrap layout-2">
+                    <div class="tf-page-cart-item">
+                        <h5 class="fw-5 mb_20">Satın Alma Detayları</h5>
+
+                        <div class="container">
+                            <div class="row">
+                                @foreach (var detail in Model.Addresses.AddressDetail)
+                                {
+                                    string phoneNumber = detail.PhoneNumber;
+                                    string maskedPhoneNumber = phoneNumber.Substring(0, 3) + new string('*', 5) + phoneNumber.Substring(phoneNumber.Length - 2);
+
+                                    <div class="col-md-6 col-lg-4 mb-4">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <input type="radio" name="SelectedAddressId" id="address-@detail.Id" value="@detail.Id" class="address-radio" onclick="selectAddress(@detail.Id)" required>
+
+                                                <h5 class="card-title">@detail.Title</h5>
+                                                <p class="card-text">
+                                                    @detail.Country Mahallesi<br>
+                                                    @detail.AddressLine1<br>
+                                                    <span style="opacity:0.6">@detail.AddressLine2</span><br>
+                                                    @detail.State/@detail.Country<br>
+                                                    @maskedPhoneNumber
+                                                </p>
+                                            </div>
+                                            <div class="card-footer d-flex justify-content-between">
+                                                <div class="article-btn">
+                                                    <a href="blog-detail.html" class="tf-btn btn-line fw-6">Düzenle<i class="icon icon-arrow1-top-left"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="form-checkout">
+                            <fieldset class="box fieldset">
+                                <label for="city">Kart Üzerindeki isim</label>
+                                <input type="text" id="city">
+                            </fieldset>
+                            <fieldset class="box fieldset">
+                                <label for="address">Kart numarası</label>
+                                <input type="text" id="address">
+                            </fieldset>
+                            <div class="box grid-2">
+                                <fieldset class="fieldset">
+                                    <label for="first-name">Son Kullanma Tarihi</label>
+                                    <input type="text" id="first-name" placeholder="00/00">
+                                </fieldset>
+                                <fieldset class="fieldset">
+                                    <label for="last-name">CCV</label>
+                                    <input type="text" id="last-name" placeholder="Kartın Arkasındaki 3 Haneli Sayı">
+                                </fieldset>
+                            </div>
+                            <fieldset class="box fieldset">
+                                <label for="note">Kullanıcı Notu (Opsiyonel)</label>
+                                <textarea name="Note" id="note"></textarea>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <div class="tf-page-cart-footer">
+                        <div class="tf-cart-footer-inner">
+                            <h5 class="fw-5 mb_20">Siparişlerim</h5>
+                            <div class="tf-page-cart-checkout widget-wrap-checkout">
+                                <ul class="wrap-checkout-product">
+                                    @foreach (var item in Model.CartViewModel.CartItems)
+                                    {
+                                        var productDetail = Model.CartViewModel.ProductDetails.FirstOrDefault(pd => pd.Product.Id == item.ProductId);
+                                        var variant = productDetail?.Variants.FirstOrDefault(v => v.Id == item.VariantId);
+                                        var imageUrl = productDetail?.Images.FirstOrDefault()?.ImageUrl;
+                                        var productName = productDetail?.Product.ProductName;
+                                        var color = variant?.Color;
+                                        var size = variant?.Size;
+                                        var quantity = item.Quantity;
+                                        var price = productDetail?.Product.Price + (variant?.AdditionalPrice ?? 0);
+                                        var total = price * quantity;
+                                        var productId = productDetail?.Product.Id;
+
+                                        <input type="hidden" name="OrderItems[@Model.CartViewModel.CartItems.IndexOf(item)].ProductId" value="@item.ProductId" />
+                                        <input type="hidden" name="OrderItems[@Model.CartViewModel.CartItems.IndexOf(item)].VariantId" value="@item.VariantId" />
+                                        <input type="hidden" name="OrderItems[@Model.CartViewModel.CartItems.IndexOf(item)].Quantity" value="@item.Quantity" />
+                                        <input type="hidden" name="OrderItems[@Model.CartViewModel.CartItems.IndexOf(item)].Price" value="@price" />
+
+
+                                        <li class="checkout-product-item">
+                                            <figure class="img-product">
+                                                <img src="@imageUrl" alt="product">
+                                                <span class="quantity">@quantity</span>
+                                            </figure>
+                                            <div class="content">
+                                                <div class="info">
+                                                    <p class="name"></p>
+                                                    <span class="variant">@color / @size</span>
+                                                </div>
+                                                <input type="hidden" name="TotalAmount" value="@Model.CartViewModel.CartItems.Sum(item => item.Quantity * (Model.CartViewModel.ProductDetails.First(pd => pd.Product.Id == item.ProductId).Product.Price + Model.CartViewModel.ProductDetails.First(pd => pd.Product.Id == item.ProductId).Variants.First(v => v.Id == item.VariantId).AdditionalPrice))" />
+                                                <span class="price">@total.Value.ToString("C")</span>
+                                            </div>
+                                        </li>
+                                    }
+
+
+                                </ul>
+                                <div class="d-flex justify-content-between line pb_20">
+                                    <h6 class="fw-5">Toplam</h6>
+                                    <h6 class="total fw-5">@Model.CartViewModel.CartItems.Sum(item => item.Quantity * (Model.CartViewModel.ProductDetails.First(pd => pd.Product.Id == item.ProductId).Product.Price + Model.CartViewModel.ProductDetails.First(pd => pd.Product.Id == item.ProductId).Variants.First(v => v.Id == item.VariantId).AdditionalPrice)).ToString("C")</h6>
+                                </div>
+                                <div class="wd-check-payment">
+                                    <p class="text_black-2 mb_20">Kişisel verileriniz siparişinizi işlemek, bu web sitesindeki deneyiminizi desteklemek ve <a href="privacy-policy.html" class="text-decoration-underline">gizlilik politikamızda</a> açıklanan diğer amaçlar için kullanılacaktır.</p>
+                                </div>
+                                <button type="submit" class="tf-btn radius-3 btn-fill btn-icon animate-hover-btn justify-content-center">Sipariş ver</button>
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </form>
+    <!-- page-cart -->
+    <script>
+        function selectAddress(addressId) {
+            console.log("Selected Address ID: " + addressId);
+        }
+    </script>
+</div>
+
